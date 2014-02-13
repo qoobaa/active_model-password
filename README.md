@@ -1,12 +1,13 @@
 # ActiveModel::Password
 
-TODO: Write a gem description
+`ActiveModel::Password` is a lightweight password model implemented
+on top of `ActiveModel::Model`.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'active_model-password'
+    gem "active_model-password"
 
 And then execute:
 
@@ -18,12 +19,39 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+The most popular workflow is:
 
-## Contributing
+    class PasswordController < ApplicationController
+      def edit
+        @password = ActiveModel::Password.new
+        @password.user = current_user
+      end
 
-1. Fork it ( http://github.com/<my-github-username>/active_model-password/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+      def update
+        @password = ActiveModel::Password.new(password_params)
+        @password.user = current_user
+        if @password.save
+          redirect_to root_url, notice: "Password changed successfully."
+        else
+          render :edit
+        end
+      end
+
+      private
+
+      def password_params
+        params.require(:active_model_password).permit(:password, :password_confirmation)
+      end
+    end
+
+If you don't like the default behavior, you can always inherit the
+password model and override some defaults:
+
+     class Password < ActiveModel::Password
+       validates :password, format: {with: /\A(?=.*[a-z])(?=.*[A-Z])(?=.*\d)./}, length: {in: 8..255}, if: -> { password.present? }
+     end
+
+
+## Copyright
+
+Copyright © 2014 Kuba Kuźma. See LICENSE for details.
