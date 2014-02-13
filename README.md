@@ -21,7 +21,7 @@ Or install it yourself as:
 
 The most popular workflow is:
 
-    class PasswordController < ApplicationController
+    class PasswordsController < ApplicationController
       def edit
         @password = ActiveModel::Password.new
         @password.user = current_user
