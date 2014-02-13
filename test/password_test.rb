@@ -1,10 +1,13 @@
 require "test_helper"
 
 class User
+  include ActiveModel::Model
+
   attr_accessor :password, :password_confirmation, :persisted
+  validates :password, format: {with: /\A(?=.*[a-z])(?=.*[A-Z])(?=.*\d)./}, length: {in: 8..255}, if: -> { password.present? }
 
   def save
-    password == password_confirmation
+    valid?
   end
 
   def persisted?
@@ -32,6 +35,30 @@ class PasswordTest < Test::Unit::TestCase
 
   test "is invalid without password" do
     @password.password = ""
+    assert @password.invalid?
+    assert @password.errors[:password].present?
+  end
+
+  test "is invalid with too short password" do
+    @password.password = "Secret1"
+    assert @password.invalid?
+    assert @password.errors[:password].present?
+  end
+
+  test "is invalid with password without uppercase letter" do
+    @password.password = "secretsecret1"
+    assert @password.invalid?
+    assert @password.errors[:password].present?
+  end
+
+  test "is invalid with password without lowercase letter" do
+    @password.password = "SECRETSECRET1"
+    assert @password.invalid?
+    assert @password.errors[:password].present?
+  end
+
+  test "is invalid with password without number" do
+    @password.password = "SecretSecret"
     assert @password.invalid?
     assert @password.errors[:password].present?
   end

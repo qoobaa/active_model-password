@@ -45,12 +45,7 @@ The most popular workflow is:
     end
 
 If you don't like the default behavior, you can always inherit the
-password model and override some defaults:
-
-     class Password < ActiveModel::Password
-       validates :password, format: {with: /\A(?=.*[a-z])(?=.*[A-Z])(?=.*\d)./}, length: {in: 8..255}, if: -> { password.present? }
-     end
-
+password model and override some defaults.
 
 ## Copyright
 

@@ -9,16 +9,30 @@ module ActiveModel
 
     validates :user, presence: true
     validates :password, presence: true, confirmation: true
+    validate :user_password, if: :user?
+
+    def user?
+      user.present?
+    end
 
     def persisted?
-      user.present? and user.persisted?
+      user? and user.persisted?
     end
 
     def save
       return false unless valid?
       user.password = password
-      user.password_confirmation = password_confirmation
       user.save
+    end
+
+    private
+
+    def user_password
+      old_password = user.password
+      user.password = password
+      errors.add(:password, user.errors[:password]) if user.invalid? and user.errors[:password].present?
+    ensure
+      user.password = old_password
     end
   end
 end
