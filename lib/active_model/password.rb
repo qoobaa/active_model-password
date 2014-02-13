@@ -22,6 +22,7 @@ module ActiveModel
     def save
       return false unless valid?
       user.password = password
+      user.password_confirmation = password_confirmation
       user.save
     end
 
