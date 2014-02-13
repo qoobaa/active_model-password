@@ -30,7 +30,9 @@ module ActiveModel
     def user_password
       old_password = user.password
       user.password = password
-      errors.add(:password, user.errors[:password]) if user.invalid? and user.errors[:password].present?
+      if user.invalid? and user.errors[:password].present?
+        user.errors[:password].each { |error| errors.add(:password, error) }
+      end
     ensure
       user.password = old_password
     end
